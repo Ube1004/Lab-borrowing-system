@@ -21,7 +21,7 @@ def qrcreate(category, type_, count):
       return "QR code generation cancelled."
         
 
-   file_path = f"flask/qr_images/{id2}.png"
+   file_path = f"qrcodes/{id2}.png"
 
    qr = qrcode.QRCode()
 
@@ -37,5 +37,4 @@ def qrcreate(category, type_, count):
 
 
 
-
-
+qrcreate("Electronics", "Laptop", 1)
