@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items</title>
+</head>
+<body>
+
+<button onclick="Get()">Load Table</button>
+
+
+<button onclick="qrscan()">Click to Scan</button>
+
+<button onclick="showInput()">Add Item</button>
+
+<div id = "inputbox" style="display:none;">
+    
+    <input type="text" id="category" placeholder="Enter data for Category code" maxlength="20" required>
+    <input type="text" id="type" placeholder="Enter Type (eg,. Telescope)" maxlength="20" required>
+    <button onclick="qrmaker()">Create QR</button>
+
+</div>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Code</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+<div id="modifyBox" style="display:none;">
+    
+    <input type="text" id="modifyCategory" placeholder="Category"><br>
+    <input type="text" id="modifyStatus" placeholder="Status"><br>
+    <input type="text" id="modifyType" placeholder="Type"><br>
+
+    <button>Save</button>
+</div>
+
+
+
+
+<p id="data"></p>
+
+
+<!--JAVASCRIPT / FUNCTIONS -->
+<script>
+function Get(){
+    fetch('/items')
+    .then(res => res.json())
+    .then(data => {
+
+        let rows = "";
+
+        data.forEach(item => {
+            rows += `
+                <tr>
+                    <td>${item.ItemID}</td>
+                    <td>${item.Code}</td>
+                    <td>${item.Category}</td>
+                    <td>${item.Type}</td>
+                    <td>${item.Status}</td>
+                    <td><button onclick="handleModify('${item.ItemID}', '${item.Category}', '${item.Status}', '${item.Type}')">Modify</button></td>
+                </tr>
+            `;
+        });
+
+        document.getElementById("tableBody").innerHTML = rows;
+    });
+}
+
+function qrscan(){
+    fetch('/qrscan')
+    .then(res => res.json())
+    .then(data => {
+        
+     let rows = "";
+
+        data.items.forEach(item => {
+            rows += `
+                <tr>
+                    <td>${item.ItemID}</td>
+                    <td>${item.Code}</td>
+                    <td>${item.Category}</td>
+                    <td>${item.Type}</td>
+                    <td>${item.Status}</td>
+                    <td><button onclick="handleAction('${item.Code}', '${item.Status}')">
+            ${item.Status === "Available" ? "Borrow" : "Return"}</td>
+                        
+
+                </tr>
+            `;
+        });
+
+        document.getElementById("tableBody").innerHTML = rows;
+        if(data.missing && data.missing.length > 0){
+        alert("item: " + data.missing.join(", ") + " Are not on Database");
+    }
+        
+    });
+
+    
+}
+
+function showInput(){
+    document.getElementById("inputbox").style.display = "block";
+}
+function handleModify(id, category, status, type){
+
+    document.getElementById("modifyBox").style.display = "block";
+
+    
+    document.getElementById("modifyCategory").value = category;
+    document.getElementById("modifyStatus").value = status;
+    document.getElementById("modifyType").value = type;
+}
+
+function qrmaker(){
+
+
+    let qrdata = document.getElementById('category').value;
+    let category = document.getElementById('type').value;
+    qrdata = qrdata.trim();
+    category = category.trim();
+    if (!qrdata || !category) {
+        alert("Please fill in Category and Type.");
+        return;
+    }
+    fetch('/qrmaker' ,{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ category: qrdata, type: category })
+    })
+    .then(res => res.text())
+    .then(data => {
+        document.getElementById('data').innerHTML = data;
+    });
+}
+
+function modifyItem(ItemID) {
+    fetch('/modify', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ItemID: ItemID, category: document.getElementById('modifyCategory').value, status: document.getElementById('modifyStatus').value, type: document.getElementById('modifyType').value })
+
+
+
+    })
+
+
+
+}
+
+
+</script>
+
+</body>
+</html>
