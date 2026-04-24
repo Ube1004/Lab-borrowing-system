@@ -1,0 +1,14 @@
+install python
+python -m pip install flask
+python -m pip install qrcode
+python -m pip install pillow
+python -m pip install opencv-python
+python -m pip install pyzbar
+
+sudo apt update
+sudo apt install -y libzbar0
+
+python -m pip install numpy
+
+python -m pip install flask qrcode pillow opencv-python pyzbar numpy
+sudo apt update && sudo apt install -y libzbar0
