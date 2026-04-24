@@ -21,7 +21,7 @@ def qrcreate(category, type_, count):
       return "QR code generation cancelled."
         
 
-   file_path = f"C:\\Users\\PISONETADMIN-1\\Desktop\\qr\\{id2}.png"
+   file_path = f"flask/qr_images/{id2}.png"
 
    qr = qrcode.QRCode()
 
