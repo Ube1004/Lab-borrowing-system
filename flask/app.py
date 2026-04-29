@@ -21,7 +21,7 @@ def get_items():
 
     
 
-    cursor.execute("SELECT * FROM Items ORDER BY Status ASC")
+    cursor.execute("SELECT * FROM Items")
     rows = cursor.fetchall()
 
     db_conn.close()
@@ -124,6 +124,11 @@ def modify_item():
     new_category = data.get('category')
     new_type = data.get('type')
 
+    print("ItemID:", ItemID)
+    print("Status:", new_status)
+    print("Category:", new_category)
+    print("Type:", new_type)
+    
     if not ItemID or not new_status:
         return jsonify({"error": "ItemID and status are required."}), 400
 

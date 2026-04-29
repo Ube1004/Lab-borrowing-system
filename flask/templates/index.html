@@ -25,12 +25,12 @@
 <table border="1">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Code</th>
-            <th>Category</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th style="width: 30px;">   ID </th>
+            <th style="width: 50px;">Code</th>
+            <th style="width: 50px;">Category</th>
+            <th style="width: 50px;">Type</th>
+            <th style="width: 50px;">Status</th>
+            <th style="width: 50px;">Actions</th>
         </tr>
     </thead>
     <tbody id="tableBody"></tbody>
@@ -38,11 +38,24 @@
 
 <div id="modifyBox" style="display:none;">
     
-    <input type="text" id="modifyCategory" placeholder="Category"><br>
-    <input type="text" id="modifyStatus" placeholder="Status"><br>
-    <input type="text" id="modifyType" placeholder="Type"><br>
+    Category:
+        <input type="text" id="modifyCategory" placeholder="Category"><br>
 
-    <button>Save</button>
+    <!--RADIO-->
+        <input type="radio" id="statusAvailable" name="Status" value="Available">
+            <label for="statusAvailable">Available</label><br>
+
+        <input type="radio" id="statusBorrowed" name="Status" value="Borrowed">
+            <label for="statusBorrowed">Borrowed</label><br>
+
+        <input type="radio" id="statusUnavailable" name="Status" value="Unavailable">
+            <label for="statusUnavailable">Unavailable</label><br>
+
+    Type:
+        <input type="text" id="modifyType" placeholder="Type"><br>
+
+    <button onclick="modifyItem(selectedItemID)">Save</button>
+  
 </div>
 
 
@@ -52,119 +65,8 @@
 
 
 <!--JAVASCRIPT / FUNCTIONS -->
-<script>
-function Get(){
-    fetch('/items')
-    .then(res => res.json())
-    .then(data => {
+<script src="{{ url_for('static', filename='script.js') }}" defer></script>
 
-        let rows = "";
-
-        data.forEach(item => {
-            rows += `
-                <tr>
-                    <td>${item.ItemID}</td>
-                    <td>${item.Code}</td>
-                    <td>${item.Category}</td>
-                    <td>${item.Type}</td>
-                    <td>${item.Status}</td>
-                    <td><button onclick="handleModify('${item.ItemID}', '${item.Category}', '${item.Status}', '${item.Type}')">Modify</button></td>
-                </tr>
-            `;
-        });
-
-        document.getElementById("tableBody").innerHTML = rows;
-    });
-}
-
-function qrscan(){
-    fetch('/qrscan')
-    .then(res => res.json())
-    .then(data => {
-        
-     let rows = "";
-
-        data.items.forEach(item => {
-            rows += `
-                <tr>
-                    <td>${item.ItemID}</td>
-                    <td>${item.Code}</td>
-                    <td>${item.Category}</td>
-                    <td>${item.Type}</td>
-                    <td>${item.Status}</td>
-                    <td><button onclick="handleAction('${item.Code}', '${item.Status}')">
-            ${item.Status === "Available" ? "Borrow" : "Return"}</td>
-                        
-
-                </tr>
-            `;
-        });
-
-        document.getElementById("tableBody").innerHTML = rows;
-        if(data.missing && data.missing.length > 0){
-        alert("item: " + data.missing.join(", ") + " Are not on Database");
-    }
-        
-    });
-
-    
-}
-
-function showInput(){
-    document.getElementById("inputbox").style.display = "block";
-}
-function handleModify(id, category, status, type){
-
-    document.getElementById("modifyBox").style.display = "block";
-
-    
-    document.getElementById("modifyCategory").value = category;
-    document.getElementById("modifyStatus").value = status;
-    document.getElementById("modifyType").value = type;
-}
-
-function qrmaker(){
-
-
-    let qrdata = document.getElementById('category').value;
-    let category = document.getElementById('type').value;
-    qrdata = qrdata.trim();
-    category = category.trim();
-    if (!qrdata || !category) {
-        alert("Please fill in Category and Type.");
-        return;
-    }
-    fetch('/qrmaker' ,{
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ category: qrdata, type: category })
-    })
-    .then(res => res.text())
-    .then(data => {
-        document.getElementById('data').innerHTML = data;
-    });
-}
-
-function modifyItem(ItemID) {
-    fetch('/modify', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ItemID: ItemID, category: document.getElementById('modifyCategory').value, status: document.getElementById('modifyStatus').value, type: document.getElementById('modifyType').value })
-
-
-
-    })
-
-
-
-}
-
-
-</script>
 
 </body>
 </html>

@@ -6,6 +6,8 @@ def qrcreate(category, type_, count):
 
    Type = type_.upper().strip()
 
+   category = category.upper().strip()
+
    id = f"{count:03d}".upper().strip()
 
    if Type == "":
@@ -16,9 +18,9 @@ def qrcreate(category, type_, count):
 
    id2 = fc + id
 
-   if id2 == "CANCEL" or id2 == "EXIT" or id2 == "":
+   #if id2 == "CANCEL" or id2 == "EXIT" or id2 == "":
         
-      return "QR code generation cancelled."
+   #   return "QR code generation cancelled."
         
 
    file_path = f"qrcodes/{id2}.png"
@@ -36,5 +38,3 @@ def qrcreate(category, type_, count):
    print("QR code generated and saved to:", file_path)
 
 
-
-qrcreate("Electronics", "Laptop", 1)
